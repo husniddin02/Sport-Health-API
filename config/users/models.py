@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 class UserProfile(models.Model):
+    
     user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name="Пользователь")
 
     height = models.DecimalField("Рост", max_digits=5, decimal_places=2, null=True, blank=True)
@@ -11,7 +12,7 @@ class UserProfile(models.Model):
     date_of_birth = models.DateField("Дата рождения", null=True, blank=True)
 
     GENDER_CHOICES = [
-        ('Male', 'Мужской'),
+        ('Male', 'Мужской'), 
         ('Female', 'Женский'),
     ]
     gender = models.CharField("Пол", max_length=10, choices=GENDER_CHOICES, null=True, blank=True)
@@ -19,12 +20,11 @@ class UserProfile(models.Model):
     address = models.TextField("Адрес", null=True, blank=True)
     profile_photo = models.ImageField("Фото профиля", upload_to='profile_photos/', null=True, blank=True)
 
-    groups = models.ManyToManyField('auth.Group', related_name='user_profiles', blank=True)
-    user_permissions = models.ManyToManyField('auth.Permission', related_name='user_profiles', blank=True)
-
     def __str__(self):
         return self.user.username
-
+    
     class Meta:
         verbose_name = "Профиль пользователя"
         verbose_name_plural = "Профили пользователей"
+
+        
