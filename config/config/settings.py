@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'users',
     'events',
     'health',
-    'rest_framework'
+    'rest_framework',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
