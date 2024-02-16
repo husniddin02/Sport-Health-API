@@ -37,14 +37,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'config',
-    'users',
-    'health',
     'workouts',
-    'events',
-    'sports_facilities',
-    'sport_categories',
     'news',
+    'sportCategories',
+    'sportFacilities',
+    'users',
+    'events',
+    'health',
+    'rest_framework'
 ]
 
 MIDDLEWARE = [

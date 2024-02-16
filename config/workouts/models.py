@@ -1,15 +1,16 @@
 from django.db import models
-from users.models import UserProfile
+from users.models import User
 
 class Workout(models.Model):
-    user_profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, verbose_name="Профиль пользователя")
-    workout_date = models.DateField("Дата тренировки")
-    exercise_type = models.CharField("Тип упражнения", max_length=50)
-    duration = models.DurationField("Продолжительность тренировки")
-    notes = models.TextField("Дополнительные заметки о тренировке", null=True, blank=True)
+    workout_id = models.AutoField(primary_key=True, verbose_name="Идентификатор тренировки")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Пользователь")
+    workout_date = models.DateField(verbose_name="Дата тренировки")
+    exercise_type = models.CharField(max_length=100, verbose_name="Тип упражнения")
+    duration = models.DurationField(verbose_name="Продолжительность тренировки")
+    notes = models.TextField(null=True, blank=True, verbose_name="Заметки")
 
     def __str__(self):
-        return f"Тренировка {self.user_profile.user.username} - {self.workout_date}"
+        return f"Запись о тренировке пользователя {self.user.username} от {self.workout_date}"
 
     class Meta:
         verbose_name = "Тренировка"

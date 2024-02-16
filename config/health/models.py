@@ -1,36 +1,33 @@
 from django.db import models
-from users.models import UserProfile
+from users.models import User
 
 class Health(models.Model):
-    user_profile = models.OneToOneField(UserProfile, on_delete=models.CASCADE, verbose_name="Профиль пользователя")
+    health_id = models.AutoField(primary_key=True, verbose_name="Уникальный идентификатор записи о здоровье")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Пользователь")
 
-    height = models.DecimalField("Рост", max_digits=5, decimal_places=2, null=True, blank=True)
-    weight = models.DecimalField("Вес", max_digits=5, decimal_places=2, null=True, blank=True)
-    heart_rate = models.IntegerField("Пульс", null=True, blank=True)
-    bmi = models.DecimalField("ИМТ", max_digits=5, decimal_places=2, null=True, blank=True)
-    bmi_category = models.CharField("Категория ИМТ", max_length=20, null=True, blank=True)
-    additional_notes = models.TextField("Дополнительные заметки о здоровье", null=True, blank=True)
+    # Physical measurements
+    height = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, verbose_name="Рост (см)")
+    weight = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, verbose_name="Вес (кг)")
 
-    def save(self, *args, **kwargs):
-        # Расчет ИМТ
-        if self.height and self.weight:
-            self.bmi = self.weight / (self.height / 100) ** 2
+    # Vital signs
+    heart_rate = models.IntegerField(null=True, blank=True, verbose_name="Частота сердечных сокращений (уд./мин.)")
 
-            # Определение категории ИМТ
-            if self.bmi < 18.5:
-                self.bmi_category = "Недостаточный вес"
-            elif 18.5 <= self.bmi < 25:
-                self.bmi_category = "Нормальный вес"
-            elif 25 <= self.bmi < 30:
-                self.bmi_category = "Избыточный вес"
-            else:
-                self.bmi_category = "Ожирение"
+    # Body mass index (BMI)
+    bmi = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, verbose_name="Индекс массы тела (ИМТ)")
+    bmi_category = models.CharField(max_length=50, null=True, blank=True, choices=[
+        ('underweight', 'Ниже нормального веса'),
+        ('normal', 'Нормальный вес'),
+        ('overweight', 'Избыточный вес'),
+        ('obese_1', 'Ожирение I степени'),
+        ('obese_2', 'Ожирение II степени'),
+    ], verbose_name="Категория ИМТ")
 
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return f"Здоровье {self.user_profile.user.username}"
+    # Additional notes
+    additional_notes = models.TextField(null=True, blank=True, verbose_name="Дополнительные заметки")
 
     class Meta:
-        verbose_name = "Здоровье пользователя"
-        verbose_name_plural = "Здоровье пользователей"
+        verbose_name = "Запись о здоровье"
+        verbose_name_plural = "Записи о здоровье"
+
+    def __str__(self):
+        return f"Запись о здоровье пользователя {self.user.username} от {self.id}"

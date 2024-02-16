@@ -1,8 +1,14 @@
+# config/urls.py
 from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('users/', include('users.urls')), 
-    path('auth/', include('django.contrib.auth.urls')),
+    path('api/', include('workouts.urls')),
+    path('api/', include('news.urls')),
+    path('api/', include('sportCategories.urls')),
+    path('api/', include('sportFacilities.urls')),
+    path('api/', include('users.urls')),
+    path('api/', include('events.urls')),
+    path('api/', include('health.urls')),
 ]
