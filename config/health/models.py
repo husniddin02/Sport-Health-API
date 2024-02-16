@@ -3,7 +3,8 @@ from users.models import User
 
 class Health(models.Model):
     health_id = models.AutoField(primary_key=True, verbose_name="Уникальный идентификатор записи о здоровье")
-    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Пользователь")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Пользователь", default=1)
+
 
     # Physical measurements
     height = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, verbose_name="Рост (см)")

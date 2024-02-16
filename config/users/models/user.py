@@ -1,13 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager, Group, Permission
-#from django.utils import timezone
-
-# Create your models here.
 
 class CustomUserManager(UserManager):
-
     def create_user(self, email, password, **extra_fields):
-    
         if not email:
             raise ValueError("The Email must be set")
         email = self.normalize_email(email)
@@ -17,7 +12,6 @@ class CustomUserManager(UserManager):
         return user
 
     def create_superuser(self, email, password, **extra_fields):
-     
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
         extra_fields.setdefault("is_active", True)
@@ -28,55 +22,52 @@ class CustomUserManager(UserManager):
             raise ValueError("Superuser must have is_superuser=True.")
         return self.create_user(email, password, **extra_fields)
 
-
 class User(AbstractBaseUser, PermissionsMixin):
+    username = models.CharField("Имя пользователя", max_length=50, unique=True)
+    first_name = models.CharField("Имя", max_length=65)
+    last_name = models.CharField("Фамилия", max_length=65)
+    email = models.EmailField("Эл.почта", unique=True)
+    avatar = models.ImageField("Фото", upload_to="avatar/", null=True, blank=True)
+    create_time = models.DateTimeField("Время создания", auto_now_add=True)
+    update_time = models.DateTimeField("Время обновления", auto_now=True)
+    height = models.DecimalField("Рост", max_digits=5, decimal_places=2, null=True, blank=True)
+    weight = models.DecimalField("Вес", max_digits=5, decimal_places=2, null=True, blank=True)
+    date_of_birth = models.DateField("Дата рождения", null=True, blank=True)
 
-  username = models.CharField("Имя пользователя", max_length=50, unique=True)
-  first_name = models.CharField("Имя", max_length=65)
-  last_name = models.CharField("Фамилия", max_length=65)
-  email = models.EmailField("Эл.почта", unique=True)
-  avatar = models.ImageField("Фото", upload_to="avatar/", null=True, blank=True)
-  create_time = models.DateTimeField("Время создания", auto_now_add=True)
-  update_time = models.DateTimeField("Время обновления", auto_now=True)
-  height = models.DecimalField("Рост", max_digits=5, decimal_places=2, null=True, blank=True)
-  weight = models.DecimalField("Вес", max_digits=5, decimal_places=2, null=True, blank=True)
-  date_of_birth = models.DateField("Дата рождения", null=True, blank=True)
-
-  GENDER_CHOICES = [
+    GENDER_CHOICES = [
         ('Male', 'Мужской'), 
         ('Female', 'Женский'),
     ]
-  gender = models.CharField("Пол", max_length=10, choices=GENDER_CHOICES, null=True, blank=True)
-  
-  is_active = models.BooleanField("Активный", default=True)
-  is_superuser = models.BooleanField("Супер пользователь", default=False)
-  is_staff = models.BooleanField(default=False)
+    gender = models.CharField("Пол", max_length=10, choices=GENDER_CHOICES, null=True, blank=True)
+    
+    is_active = models.BooleanField("Активный", default=True)
+    is_superuser = models.BooleanField("Супер пользователь", default=False)
+    is_staff = models.BooleanField(default=False)
 
-  USERNAME_FIELD = "email"
+    USERNAME_FIELD = "email"
 
-  objects = CustomUserManager()
+    objects = CustomUserManager()
 
-  def __str__(self):
-      return f"({self.id}) {self.username}"
-  
-  def has_perm(self, perm, obj=None):
-      return self.is_superuser
-  
-  def has_module_perms(self, app_label):
-      return self.is_superuser
-  
-  def save(self, *args, **kwargs) -> None:
-      self.username = self.email[:self.email.index("@")]
-      return super().save(*args, **kwargs)
+    def __str__(self):
+        return f"({self.id}) {self.username}"
+    
+    def has_perm(self, perm, obj=None):
+        return self.is_superuser
+    
+    def has_module_perms(self, app_label):
+        return self.is_superuser
+    
+    def save(self, *args, **kwargs) -> None:
+        self.username = self.email[:self.email.index("@")]
+        return super().save(*args, **kwargs)
 
-  
-  
-  class Meta:
-    verbose_name = "Пользователь"
-    verbose_name_plural = "Пользователи"
+    class Meta:
+        verbose_name = "Пользователь"
+        verbose_name_plural = "Пользователи"
 
-  def __str__(self) -> str:
-       return f"{self.username}"
+    def __str__(self) -> str:
+        return f"{self.username}"
 
-User._meta.get_field('groups').remote_field.related_name = 'user_groups'
-User._meta.get_field('user_permissions').remote_field.related_name = 'user_permissions'
+# Исправления для конфликтов имен обратных связей
+User._meta.get_field('groups').remote_field.related_name = 'custom_user_groups'
+User._meta.get_field('user_permissions').remote_field.related_name = 'custom_user_permissions'
