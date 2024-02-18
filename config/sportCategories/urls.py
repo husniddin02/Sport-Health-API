@@ -1,7 +1,7 @@
-# sportCategories/urls.py
 from django.urls import path
-from .views import SportCategoryListAPIView
+from .views import SportCategoryListView, SportCategoryDetailsView
 
 urlpatterns = [
-    path('categories/', SportCategoryListAPIView.as_view(), name='category-list'),
+    path('categories/', SportCategoryListView.as_view(), name='sportcategory-list'),
+    path('categories/<int:pk>/', SportCategoryDetailsView.as_view(), name='sportcategory-detail'),
 ]

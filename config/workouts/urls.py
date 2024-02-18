@@ -1,8 +1,7 @@
-# workouts/urls.py
 from django.urls import path
-from .views import WorkoutListAPIView, WorkoutDetailAPIView
+from .views import WorkoutListView, WorkoutDetailsView
 
 urlpatterns = [
-    path('workouts/', WorkoutListAPIView.as_view(), name='workout-list'),
-    path('workouts/<int:pk>/', WorkoutDetailAPIView.as_view(), name='workout-detail'),
+    path('workouts/', WorkoutListView.as_view(), name='workout-list'),
+    path('workouts/<int:pk>/', WorkoutDetailsView.as_view(), name='workout-detail'),
 ]

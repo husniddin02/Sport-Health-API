@@ -1,6 +1,11 @@
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema_field
-
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
+from django.core.mail import send_mail
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
+from django.contrib.auth.tokens import default_token_generator
 from rest_framework import serializers
 from ..models import User
 
@@ -11,7 +16,6 @@ class LoginSerializer(serializers.Serializer):
 
 
 class SignUpSerializer(serializers.ModelSerializer):
-
     token = serializers.SerializerMethodField()
 
     class Meta:
@@ -36,3 +40,20 @@ class SignUpSerializer(serializers.ModelSerializer):
 
 class DummySerializer(serializers.Serializer):
     pass
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+
+    def validate_new_password(self, value):
+        validate_password(value)
+        return value
+
+
+class EmailConfirmationSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+
+
+class PasswordResetSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)

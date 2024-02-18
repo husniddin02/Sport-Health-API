@@ -1,25 +1,45 @@
-# workouts/views.py
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.generics import RetrieveAPIView
-from rest_framework import status
+from rest_framework import generics
+from drf_yasg.utils import swagger_auto_schema
 from .models import Workout
 from .serializers import WorkoutSerializer
 
-class WorkoutListAPIView(APIView):
-    def get(self, request):
-        workouts = Workout.objects.all()
-        serializer = WorkoutSerializer(workouts, many=True)
-        return Response(serializer.data)
+class WorkoutListView(generics.ListCreateAPIView):
+    """
+    Тренировки (Workouts).
 
-    def post(self, request):
-        serializer = WorkoutSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class WorkoutDetailAPIView(RetrieveAPIView):
+    * Получить список всех тренировок.
+    * Создать новую тренировку.
+    """
     queryset = Workout.objects.all()
     serializer_class = WorkoutSerializer
+
+    @swagger_auto_schema(operation_description="Получить список всех тренировок")
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+    @swagger_auto_schema(operation_description="Создать новую тренировку")
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
+
+class WorkoutDetailsView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Детали тренировки.
+
+    * Получить информацию о конкретной тренировке.
+    * Обновить информацию о тренировке.
+    * Удалить тренировку.
+    """
+    queryset = Workout.objects.all()
+    serializer_class = WorkoutSerializer
+
+    @swagger_auto_schema(operation_description="Получить информацию о конкретной тренировке")
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+    @swagger_auto_schema(operation_description="Обновить информацию о тренировке")
+    def put(self, request, *args, **kwargs):
+        return super().put(request, *args, **kwargs)
+
+    @swagger_auto_schema(operation_description="Удалить тренировку")
+    def delete(self, request, *args, **kwargs):
+        return super().delete(request, *args, **kwargs)

@@ -21,7 +21,7 @@ def send_welcome_email(sender, instance, created, **kwargs):
         # Отправить приветственное письмо новому пользователю
         subject = "Welcome to our website!"
         message = "Hi {},\n\nWelcome to our website! We hope you enjoy your stay.\n\nSincerely,\nThe Website Team".format(instance.username)
-        send_mail(subject, message, from_email='your_email@example.com', to=[instance.email])
+        send_mail(subject, message, from_email='your_email@example.com', recipient_list=[instance.email])
 
 
 @receiver(pre_save, sender=User)

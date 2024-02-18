@@ -1,19 +1,45 @@
-# sportCategories/views.py
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import generics
+from drf_yasg.utils import swagger_auto_schema
 from .models import SportCategory
 from .serializers import SportCategorySerializer
 
-class SportCategoryListAPIView(APIView):
-    def get(self, request):
-        categories = SportCategory.objects.all()
-        serializer = SportCategorySerializer(categories, many=True)
-        return Response(serializer.data)
+class SportCategoryListView(generics.ListCreateAPIView):
+    """
+    Категории спорта (SportCategories).
 
-    def post(self, request):
-        serializer = SportCategorySerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    * Получить список всех категорий спорта.
+    * Создать новую категорию спорта.
+    """
+    queryset = SportCategory.objects.all()
+    serializer_class = SportCategorySerializer
+
+    @swagger_auto_schema(operation_description="Получить список всех категорий спорта")
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+    @swagger_auto_schema(operation_description="Создать новую категорию спорта")
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
+
+class SportCategoryDetailsView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Детали категории спорта.
+
+    * Получить информацию о конкретной категории спорта.
+    * Обновить информацию о категории спорта.
+    * Удалить категорию спорта.
+    """
+    queryset = SportCategory.objects.all()
+    serializer_class = SportCategorySerializer
+
+    @swagger_auto_schema(operation_description="Получить информацию о конкретной категории спорта")
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+    @swagger_auto_schema(operation_description="Обновить информацию о категории спорта")
+    def put(self, request, *args, **kwargs):
+        return super().put(request, *args, **kwargs)
+
+    @swagger_auto_schema(operation_description="Удалить категорию спорта")
+    def delete(self, request, *args, **kwargs):
+        return super().delete(request, *args, **kwargs)
