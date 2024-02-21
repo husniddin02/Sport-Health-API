@@ -1,0 +1,16 @@
+/* src/components/facilities/FacilityDetails.css */
+
+.facility-details {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .facility-details h2 {
+    margin-bottom: 10px;
+  }
+  
+  .facility-details p {
+    margin-bottom: 5px;
+  }
+  

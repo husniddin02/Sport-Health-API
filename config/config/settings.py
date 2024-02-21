@@ -1,3 +1,4 @@
+# config/settings.py
 """
 Django settings for config project.
 
@@ -136,3 +137,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 CORS_ALLOW_ALL_ORIGINS = True  # Разрешить доступ со всех источников
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

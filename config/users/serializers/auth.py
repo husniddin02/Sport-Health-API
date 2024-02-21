@@ -1,3 +1,4 @@
+# users/serializers/auth.py
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema_field
 from django.contrib.auth.password_validation import validate_password
