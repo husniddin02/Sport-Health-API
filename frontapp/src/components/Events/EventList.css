@@ -1,0 +1,16 @@
+/* src/components/Events/EventsList.css */
+
+.event {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 10px 0;
+  }
+  
+  .event h3 {
+    margin: 0;
+  }
+  
+  .event p {
+    margin: 5px 0;
+  }
+  
