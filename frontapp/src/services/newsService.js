@@ -1,6 +1,6 @@
 // src/services/newsService.js
 
-const API_URL = 'http://127.0.0.1:8000/api/v1/news/';
+const API_URL = 'http://127.0.0.1:8000/news/';
 
 const headers = {
   'Content-Type': 'application/json',

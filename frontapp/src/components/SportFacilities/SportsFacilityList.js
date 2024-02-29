@@ -1,40 +1,40 @@
-// src/components/SportsFacility/SportsFacilityList.js
-
 import React, { useState, useEffect } from 'react';
-import SportsFacilityService from '../../services/sportsFacilityService';
+import { Link } from 'react-router-dom';
+import { getAllSportsFacilities } from '../../services/sportsFacilityService'; // Обновленный импорт
 
-const SportsFacilityList = () => {
-  const [facilities, setFacilities] = useState([]);
+function SportsFacilityList() {
+  const [sportsFacilities, setSportsFacilities] = useState([]);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchFacilities = async () => {
-      try {
-        const data = await SportsFacilityService.getAllFacilities();
-        setFacilities(data);
-      } catch (error) {
-        console.error('Error fetching facilities:', error);
-      }
-    };
-
-    fetchFacilities();
+    fetchSportsFacilities();
   }, []);
+
+  async function fetchSportsFacilities() {
+    try {
+      const data = await getAllSportsFacilities(); // Обновленный вызов функции
+      setSportsFacilities(data);
+    } catch (error) {
+      setError(error);
+    }
+  }
+
+  if (error) {
+    return <div>Error fetching sports facilities: {error.message}</div>;
+  }
 
   return (
     <div>
-      <h2>Sports Facilities</h2>
+      <h1>Sports Facilities</h1>
       <ul>
-        {facilities.map((facility) => (
-          <li key={facility.facility_id}>
-            <h3>{facility.facility_name}</h3>
-            <p>Location: {facility.location}</p>
-            <p>Capacity: {facility.capacity}</p>
-            <p>Equipment Available: {facility.equipment_available ? 'Yes' : 'No'}</p>
-            <p>Trainer Available: {facility.trainer_available ? 'Yes' : 'No'}</p>
+        {sportsFacilities.map((facility) => (
+          <li key={facility.id}>
+            <Link to={`/sports-facilities/${facility.id}`}>{facility.name}</Link>
           </li>
         ))}
       </ul>
     </div>
   );
-};
+}
 
 export default SportsFacilityList;

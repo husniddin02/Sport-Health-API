@@ -1,8 +1,8 @@
-// src/components/SportsFacility/SportsFacilityDetails.js
+// src/components/SportFacilities/SportsFacilityDetails.js
 
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import SportsFacilityService from '../../services/sportsFacilityService';
+import { getSportsFacilityById } from '../../services/sportsFacilityService'; // Исправленный импорт
 
 const SportsFacilityDetails = () => {
   const { facilityId } = useParams();
@@ -11,7 +11,7 @@ const SportsFacilityDetails = () => {
   useEffect(() => {
     const fetchFacility = async () => {
       try {
-        const data = await SportsFacilityService.getFacilityById(facilityId);
+        const data = await getSportsFacilityById(facilityId); // Исправленный вызов функции
         setFacility(data);
       } catch (error) {
         console.error('Error fetching facility details:', error);

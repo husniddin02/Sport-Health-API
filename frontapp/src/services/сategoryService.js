@@ -1,6 +1,6 @@
 // src/services/categoryService.js
 
-const API_URL = 'http://127.0.0.1:8000/api/v1/categories/';
+const API_URL = 'http://127.0.0.1:8000/categories/';
 
 const headers = {
   'Content-Type': 'application/json',

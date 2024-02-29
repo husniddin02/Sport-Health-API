@@ -1,12 +1,28 @@
 // src/components/Home.js
+import React, { useEffect, useState } from 'react';
+import './Home.css';
 
-import React from 'react';
+function Home() {
+  const [loaded, setLoaded] = useState(false);
 
-const Home = () => {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoaded(true);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
-    <div>
-      <h1>Welcome to Fitness App!</h1>
-      <p>This is the home page of our Fitness App. Get started by navigating through the menu.</p>
+    <div className={`header ${loaded ? 'loaded' : ''}`}>
+      <video autoPlay muted loop>
+        <source src="../assets/videos/header-background.mp4" type="video/mp4" />
+      </video>
+      <div className="header-content">
+        <h1>Welcome to Our App</h1>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla condimentum tortor at libero bibendum, sit amet aliquam lorem accumsan.</p>
+        <button className="button-primary">Get Started</button>
+      </div>
     </div>
   );
 }

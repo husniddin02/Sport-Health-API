@@ -1,5 +1,4 @@
 // src/services/auth.js
-
 import axios from 'axios';
 
 const BASE_URL = 'http://127.0.0.1:8000/api/v1/user/';
@@ -11,7 +10,7 @@ const AuthService = {
       const response = await axios.post(`${BASE_URL}login/`, { email, password });
       return response.data;
     } catch (error) {
-      throw error;
+      throw error.response.data;
     }
   },
 
@@ -21,7 +20,7 @@ const AuthService = {
       const response = await axios.post(`${BASE_URL}logout/`);
       return response.data;
     } catch (error) {
-      throw error;
+      throw error.response.data;
     }
   },
 
@@ -31,7 +30,7 @@ const AuthService = {
       const response = await axios.post(`${BASE_URL}signup/`, userData);
       return response.data;
     } catch (error) {
-      throw error;
+      throw error.response.data;
     }
   },
 
@@ -41,7 +40,7 @@ const AuthService = {
       const response = await axios.post(`${BASE_URL}email-confirmation/`, { email });
       return response.data;
     } catch (error) {
-      throw error;
+      throw error.response.data;
     }
   },
 
@@ -51,7 +50,7 @@ const AuthService = {
       const response = await axios.post(`${BASE_URL}password-reset/`, { email });
       return response.data;
     } catch (error) {
-      throw error;
+      throw error.response.data;
     }
   },
 
@@ -61,7 +60,7 @@ const AuthService = {
       const response = await axios.post(`${BASE_URL}change-password/`, { oldPassword, newPassword });
       return response.data;
     } catch (error) {
-      throw error;
+      throw error.response.data;
     }
   },
 };
