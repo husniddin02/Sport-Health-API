@@ -1,81 +1,170 @@
 # users/views/auth.py
-from django.contrib.auth import authenticate
-from django.contrib.auth.tokens import default_token_generator
-from django.core.mail import send_mail
-from django.core.exceptions import ValidationError
-from django.utils.encoding import force_bytes
-from django.utils.http import urlsafe_base64_encode
+
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import generics
 from drf_spectacular.utils import extend_schema, OpenApiParameter
-from rest_framework.authtoken.models import Token
 from ..serializers import (
     LoginSerializer, SignUpSerializer, ChangePasswordSerializer, EmailConfirmationSerializer, PasswordResetSerializer,
     UserSerializer
 )
 from ..models import User
+from django.contrib.auth import authenticate
+from django.core.exceptions import ValidationError
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
+from django.core.mail import send_mail
+from rest_framework.authtoken.models import Token
+
 
 class SignUpView(generics.CreateAPIView):
     """
     Регистрация нового пользователя.
 
-    Принимает данные пользователя, создает пользователя и токен авторизации.  
+    Принимает данные пользователя, создает пользователя и токен авторизации.
     Возвращает созданного пользователя и токен.
     """
     serializer_class = SignUpSerializer
 
     @extend_schema(
-        request=SignUpSerializer,
+        parameters=[
+            OpenApiParameter(
+                name="username",
+                type=str,
+                location=OpenApiParameter.QUERY,
+                required=True,
+                description="Имя пользователя"
+            ),
+            OpenApiParameter(
+                name="email",
+                type=str,
+                location=OpenApiParameter.QUERY,
+                required=True,
+                description="Email пользователя"
+            ),
+            OpenApiParameter(
+                name="password",
+                type=str,
+                location=OpenApiParameter.QUERY,
+                required=True,
+                description="Пароль пользователя"
+            ),
+            OpenApiParameter(
+                name="first_name",
+                type=str,
+                location=OpenApiParameter.QUERY,
+                required=False,
+                description="Имя пользователя"
+            ),
+            OpenApiParameter(
+                name="last_name",
+                type=str,
+                location=OpenApiParameter.QUERY,
+                required=False,
+                description="Фамилия пользователя"
+            ),
+            OpenApiParameter(
+                name="phone",
+                type=str,
+                location=OpenApiParameter.QUERY,
+                required=False,
+                description="Номер телефона пользователя"
+            ),
+            OpenApiParameter(
+                name="birthdate",
+                type=str,
+                location=OpenApiParameter.QUERY,
+                required=False,
+                description="Дата рождения пользователя в формате YYYY-MM-DD"
+            ),
+            OpenApiParameter(
+                name="gender",
+                type=str,
+                location=OpenApiParameter.QUERY,
+                required=False,
+                description="Пол пользователя (male, female, other)"
+            ),
+            OpenApiParameter(
+                name="country",
+                type=str,
+                location=OpenApiParameter.QUERY,
+                required=False,
+                description="Страна пользователя"
+            ),
+            OpenApiParameter(
+                name="city",
+                type=str,
+                location=OpenApiParameter.QUERY,
+                required=False,
+                description="Город пользователя"
+            ),
+            OpenApiParameter(
+                name="avatar",
+                type=str,
+                location=OpenApiParameter.QUERY,
+                required=False,
+                description="Ссылка на аватар пользователя"
+            ),
+        ],
         responses={201: UserSerializer}
     )
-    def post(self, request):
-        serializer = self.get_serializer(data=request.data) 
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        
         user = serializer.save()
-        
-        token, _ = Token.objects.get_or_create(user=user)
-        
-        return Response(
-            {
-                "user": UserSerializer(user).data, 
-                "token": token.key
-            }, 
-            status=status.HTTP_201_CREATED
-        )
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({
+            "user": UserSerializer(user, context=self.get_serializer_context()).data,
+            "token": token.key
+        }, status=status.HTTP_201_CREATED)
+
 
 class LoginView(APIView):
-    """
-    Авторизация пользователя.  
+    serializer_class = LoginSerializer
 
-    Принимает email и пароль.
-    Возвращает токен доступа при успешной авторизации.
-    """
-    
     @extend_schema(
         parameters=[
-            OpenApiParameter("email"),
-            OpenApiParameter("password")
+            OpenApiParameter(
+                name="email",
+                type=str,
+                location=OpenApiParameter.QUERY,
+                required=True,
+                description="Email пользователя"
+            ),
+            OpenApiParameter(
+                name="password",
+                type=str,
+                location=OpenApiParameter.QUERY,
+                required=True,
+                description="Пароль пользователя"
+            )
         ],
-        responses={200: "Auth token"}
+        responses={200: UserSerializer}
     )
     def post(self, request):
-        serializer = LoginSerializer(data=request.data)
+        serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
-        
-        email = serializer.validated_data.get('email')
-        password = serializer.validated_data.get('password')
-        
+
+        email = serializer.validated_data['email']
+        password = serializer.validated_data['password']
+
         user = authenticate(email=email, password=password)
-        
-        if user:
-            token, _ = Token.objects.get_or_create(user=user)
-            return Response({'token': token.key})
-        else:
-            return Response({}, status=status.HTTP_401_UNAUTHORIZED)
+
+        if not user:
+            return Response({'error': 'Неверные учетные данные'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        if not user.is_active:
+            return Response({'error': 'Пользователь заблокирован'}, status=status.HTTP_403_FORBIDDEN)
+
+        token, created = Token.objects.get_or_create(user=user)
+
+        return Response({
+            "user": UserSerializer(user).data,
+            "token": token.key
+        }, status=status.HTTP_200_OK)
 
 class LogoutView(APIView):
     """
@@ -92,6 +181,7 @@ class LogoutView(APIView):
         request.user.auth_token.delete()
         return Response(status=status.HTTP_200_OK)
 
+
 class ChangePasswordView(APIView):
     """
     Изменение пароля пользователя.
@@ -102,13 +192,28 @@ class ChangePasswordView(APIView):
     permission_classes = [IsAuthenticated]
 
     @extend_schema(
-        request=ChangePasswordSerializer,
+        parameters=[
+            OpenApiParameter(
+                name="old_password",
+                type=str,
+                location=OpenApiParameter.QUERY,
+                required=True,
+                description="Старый пароль пользователя"
+            ),
+            OpenApiParameter(
+                name="new_password",
+                type=str,
+                location=OpenApiParameter.QUERY,
+                required=True,
+                description="Новый пароль пользователя"
+            ),
+        ],
         responses={200: "Password changed successfully"}
     )
     def post(self, request):
         serializer = ChangePasswordSerializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
-        
+
         user = request.user
         old_password = serializer.validated_data.get('old_password')
         new_password = serializer.validated_data.get('new_password')
@@ -131,13 +236,21 @@ class EmailConfirmationView(APIView):
     permission_classes = []
 
     @extend_schema(
-        request=EmailConfirmationSerializer,
+        parameters=[
+            OpenApiParameter(
+                name="email",
+                type=str,
+                location=OpenApiParameter.QUERY,
+                required=True,
+                description="Email пользователя"
+            ),
+        ],
         responses={200: "Email confirmation sent"}
     )
     def post(self, request):
         serializer = EmailConfirmationSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        
+
         user = serializer.validated_data.get('user')
 
         uid = urlsafe_base64_encode(force_bytes(user.pk))
@@ -164,26 +277,17 @@ class PasswordResetView(APIView):
     permission_classes = []
 
     @extend_schema(
-        request=PasswordResetSerializer,
+        parameters=[
+            OpenApiParameter(
+                name="email",
+                type=str,
+                location=OpenApiParameter.QUERY,
+                required=True,
+                description="Email пользователя"
+            ),
+        ],
         responses={200: "Password reset instructions sent"}
     )
     def post(self, request):
         serializer = PasswordResetSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        
-        email = serializer.validated_data.get('email')
-        user = User.objects.get(email=email)
-
-        uid = urlsafe_base64_encode(force_bytes(user.pk))
-        token = default_token_generator.make_token(user)
-
-        send_mail(
-            'Сброс пароля',
-            f'Пройдите по ссылке для сброса пароля: http://example.com/reset/{uid}/{token}',
-            'from@example.com',
-            [user.email],
-            fail_silently=False,
-        )
-
-        return Response({'message': 'Письмо с инструкциями по сбросу пароля отправлено'}, status=status.HTTP_200_OK)
-
+        serializer

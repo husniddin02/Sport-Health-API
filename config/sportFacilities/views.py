@@ -1,15 +1,11 @@
+# views.py
+
 from rest_framework import generics
 from drf_yasg.utils import swagger_auto_schema
 from .models import SportsFacility
 from .serializers import SportsFacilitySerializer
 
 class SportsFacilityListView(generics.ListCreateAPIView):
-    """
-    Спортивные объекты (SportsFacilities).
-
-    * Получить список всех спортивных объектов.
-    * Создать новый спортивный объект.
-    """
     queryset = SportsFacility.objects.all()
     serializer_class = SportsFacilitySerializer
 
@@ -22,13 +18,6 @@ class SportsFacilityListView(generics.ListCreateAPIView):
         return super().post(request, *args, **kwargs)
 
 class SportsFacilityDetailsView(generics.RetrieveUpdateDestroyAPIView):
-    """
-    Детали спортивного объекта.
-
-    * Получить информацию о конкретном спортивном объекте.
-    * Обновить информацию о спортивном объекте.
-    * Удалить спортивный объект.
-    """
     queryset = SportsFacility.objects.all()
     serializer_class = SportsFacilitySerializer
 

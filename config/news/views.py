@@ -1,3 +1,5 @@
+# news/views.py
+
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from rest_framework import generics
@@ -38,6 +40,7 @@ class NewsListView(generics.ListCreateAPIView):
                 'publication_date': openapi.Schema(type=openapi.TYPE_STRING, format=openapi.FORMAT_DATE, description='Дата публикации новости'),
                 'author': openapi.Schema(type=openapi.TYPE_STRING, description='Автор новости'),
                 'category_id': openapi.Schema(type=openapi.TYPE_INTEGER, description='ID категории новости'),
+                'details_link': openapi.Schema(type=openapi.TYPE_STRING, description='Ссылка на подробности'),
             },
             required=['title', 'content', 'publication_date', 'author', 'category_id']
         )
@@ -55,3 +58,4 @@ class NewsDetailsView(generics.RetrieveUpdateDestroyAPIView):
     """
     queryset = News.objects.all()
     serializer_class = NewsSerializer
+

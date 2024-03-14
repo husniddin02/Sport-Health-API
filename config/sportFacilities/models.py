@@ -15,3 +15,14 @@ class SportsFacility(models.Model):
     def __str__(self):
         return self.facility_name
 
+
+class FacilityDetails(models.Model):
+    facility = models.OneToOneField(SportsFacility, on_delete=models.CASCADE, related_name='details', verbose_name="Спортивный объект")
+    details_link = models.URLField(max_length=200, verbose_name="Ссылка на дополнительные данные")
+
+    class Meta:
+        verbose_name = "Подробности спортивного объекта"
+        verbose_name_plural = "Подробности спортивных объектов"
+
+    def __str__(self):
+        return self.facility.facility_name + " - " + self.details_link

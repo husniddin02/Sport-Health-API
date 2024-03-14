@@ -1,3 +1,5 @@
+# news/models.py
+
 from django.db import models
 from sportCategories.models import SportCategory
 
@@ -8,6 +10,7 @@ class News(models.Model):
     publication_date = models.DateField(verbose_name="Дата публикации")
     author = models.CharField(max_length=100, verbose_name="Автор")
     category = models.ForeignKey(SportCategory, on_delete=models.CASCADE, verbose_name="Категория")
+    details_link = models.URLField(max_length=200, blank=True, null=True, verbose_name="Ссылка на подробности")
 
     class Meta:
         verbose_name = "Новость"

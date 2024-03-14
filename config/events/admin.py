@@ -1,9 +1,14 @@
 from django.contrib import admin
-from .models import Event
+from .models import Event, EventDetails
 
+@admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
     list_display = ['event_name', 'event_date', 'location', 'organizer']
+    list_filter = ['event_date', 'location']
     search_fields = ['event_name', 'location', 'organizer']
-    list_filter = ['event_date']
+    ordering = ['event_date']
 
-admin.site.register(Event, EventAdmin)
+@admin.register(EventDetails)
+class EventDetailsAdmin(admin.ModelAdmin):
+    list_display = ['event', 'details_link']
+    search_fields = ['event__event_name', 'details_link']

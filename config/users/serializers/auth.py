@@ -1,4 +1,3 @@
-# users/serializers/auth.py
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema_field
 from django.contrib.auth.password_validation import validate_password
@@ -8,6 +7,7 @@ from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.contrib.auth.tokens import default_token_generator
 from rest_framework import serializers
+from rest_framework.authtoken.models import Token
 from ..models import User
 
 
@@ -21,9 +21,12 @@ class SignUpSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email', 'password', 'token']
+        fields = ['username', 'first_name', 'last_name', 'email', 'password', 'token']
         read_only_fields = ('token',)
-        extra_kwargs = {'password': {'write_only': True}}
+        extra_kwargs = {
+            'password': {'write_only': True},
+            'username': {'validators': []}  # Убираем все валидаторы по умолчанию
+        }
 
     @extend_schema_field(OpenApiTypes.STR)
     def get_token(self, obj):
@@ -31,12 +34,23 @@ class SignUpSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = User.objects.create_user(
+            username=validated_data['username'],
             first_name=validated_data['first_name'],
             last_name=validated_data['last_name'],
             email=validated_data['email'],
             password=validated_data['password'],
         )
         return user
+
+    def validate_username(self, value):
+        if User.objects.filter(username=value).exists():
+            raise serializers.ValidationError("Пользователь с этим именем пользователя уже существует.")
+        return value
+
+    def validate_email(self, value):
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError("Пользователь с этим адресом электронной почты уже существует.")
+        return value
 
 
 class DummySerializer(serializers.Serializer):
