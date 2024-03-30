@@ -170,3 +170,16 @@ CORS_ALLOW_ALL_ORIGINS = True  # Разрешить доступ со всех �
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 SITE_ID = 1
+
+
+
+import os
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# Остальные настройки...
+
+STATIC_URL = '/static/'
+
+# Путь к папке, где Django будет собирать статические файлы
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')

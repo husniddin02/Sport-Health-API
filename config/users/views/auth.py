@@ -1,16 +1,12 @@
-# users/views/auth.py
-
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import generics
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from ..serializers import (
-    LoginSerializer, SignUpSerializer, ChangePasswordSerializer, EmailConfirmationSerializer, PasswordResetSerializer,
-    UserSerializer
+    LoginSerializer, SignUpSerializer, ChangePasswordSerializer,
+    EmailConfirmationSerializer, PasswordResetSerializer, UserSerializer
 )
-from ..models import User
 from django.contrib.auth import authenticate
 from django.core.exceptions import ValidationError
 from django.contrib.auth.tokens import default_token_generator
@@ -20,7 +16,7 @@ from django.core.mail import send_mail
 from rest_framework.authtoken.models import Token
 
 
-class SignUpView(generics.CreateAPIView):
+class SignUpView(APIView):
     """
     Регистрация нового пользователя.
 
@@ -59,60 +55,11 @@ class SignUpView(generics.CreateAPIView):
                 required=False,
                 description="Имя пользователя"
             ),
-            OpenApiParameter(
-                name="last_name",
-                type=str,
-                location=OpenApiParameter.QUERY,
-                required=False,
-                description="Фамилия пользователя"
-            ),
-            OpenApiParameter(
-                name="phone",
-                type=str,
-                location=OpenApiParameter.QUERY,
-                required=False,
-                description="Номер телефона пользователя"
-            ),
-            OpenApiParameter(
-                name="birthdate",
-                type=str,
-                location=OpenApiParameter.QUERY,
-                required=False,
-                description="Дата рождения пользователя в формате YYYY-MM-DD"
-            ),
-            OpenApiParameter(
-                name="gender",
-                type=str,
-                location=OpenApiParameter.QUERY,
-                required=False,
-                description="Пол пользователя (male, female, other)"
-            ),
-            OpenApiParameter(
-                name="country",
-                type=str,
-                location=OpenApiParameter.QUERY,
-                required=False,
-                description="Страна пользователя"
-            ),
-            OpenApiParameter(
-                name="city",
-                type=str,
-                location=OpenApiParameter.QUERY,
-                required=False,
-                description="Город пользователя"
-            ),
-            OpenApiParameter(
-                name="avatar",
-                type=str,
-                location=OpenApiParameter.QUERY,
-                required=False,
-                description="Ссылка на аватар пользователя"
-            ),
         ],
         responses={201: UserSerializer}
     )
     def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+        serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
         token, created = Token.objects.get_or_create(user=user)
@@ -165,6 +112,7 @@ class LoginView(APIView):
             "user": UserSerializer(user).data,
             "token": token.key
         }, status=status.HTTP_200_OK)
+
 
 class LogoutView(APIView):
     """
@@ -291,3 +239,8 @@ class PasswordResetView(APIView):
     def post(self, request):
         serializer = PasswordResetSerializer(data=request.data)
         serializer
+
+        # Здесь должна быть логика сброса пароля
+
+        return Response({'message': 'Инструкции по сбросу пароля отправлены'}, status=status.HTTP_200_OK)
+
