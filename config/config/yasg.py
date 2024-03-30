@@ -6,9 +6,9 @@ from drf_yasg import openapi
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Sport Platform",
+        title="Sport Health API",
         default_version='v1',
-        description="Sport Health Platform",
+        description="Sport Health API - Platform 'Sport and Health'",
         license=openapi.License(name="MIT License"),
     ),
     public=True,
