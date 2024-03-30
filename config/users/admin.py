@@ -31,21 +31,10 @@ class CustomUserAdmin(UserAdmin):
     search_fields = ("email",)
     ordering = ("email",)
 
-    # **Дополнительно:**
-
-    # # **1. Регистрация поля "аватар" (если необходимо):**
-
-    # if hasattr(User, "avatar") and isinstance(User._meta.get_field("avatar"), ImageField):
-    #     admin.site.register(User.avatar)
-
-    # **2. Настройка разрешений (пример):**
-
     def has_change_permission(self, request, obj=None):
         if request.user.is_superuser:
             return True
         return super().has_change_permission(request, obj)
-
-    # **3. Добавление валидации (пример):**
 
     def clean_email(self, form, field):
         email = super().clean_email(form, field)
