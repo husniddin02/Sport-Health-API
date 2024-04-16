@@ -7,7 +7,6 @@ class Health(models.Model):
     health_id = models.AutoField(primary_key=True, verbose_name="Уникальный идентификатор записи о здоровье")
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Пользователь", default=1)
 
-
     # Physical measurements
     height = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, verbose_name="Рост (см)")
     weight = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, verbose_name="Вес (кг)")
@@ -33,4 +32,4 @@ class Health(models.Model):
         verbose_name_plural = "Записи о здоровье"
 
     def __str__(self):
-        return f"Запись о здоровье пользователя {self.user.username} от {self.id}"
+        return f"Запись о здоровье пользователя {self.user.email} от {self.health_id}"
