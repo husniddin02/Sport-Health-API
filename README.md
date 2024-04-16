@@ -44,4 +44,4 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 
-Open Swagger API documentation [localhost:8000/api/v1/swagger/](http://localhost:8000/api/v1/swagger/)
+Open Swagger API documentation [localhost:8000/swagger/](http://localhost:8000/swagger/)
