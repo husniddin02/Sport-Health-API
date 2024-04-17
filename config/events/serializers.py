@@ -21,8 +21,8 @@ class EventSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         details_data = validated_data.pop('details', {})
-        details = instance.details
-
+        details, _ = EventDetails.objects.get_or_create(event=instance)
+        
         instance.event_name = validated_data.get('event_name', instance.event_name)
         instance.location = validated_data.get('location', instance.location)
         instance.event_date = validated_data.get('event_date', instance.event_date)

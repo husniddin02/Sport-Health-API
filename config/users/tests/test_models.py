@@ -57,4 +57,3 @@ class UserModelTest(TestCase):
         self.assertEqual(max_length, 65)
 
 
-
